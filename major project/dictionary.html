@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Main container for the app */
+        #container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 30%;
+            padding: 20px;
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        /* Styling for the search input and button */
+        #searchInput {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #searchInput::placeholder {
+            color: #b0bec5;
+        }
+
+        #searchButton {
+            margin-left: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #0056b3;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Styling for the search results */
+        #searchResults {
+            margin-top: 10%;
+            width: 60%;
+            padding: 20px;
+        }
+
+        h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        /* Styling for the recently searched words */
+        #recentlySearched {
+            width: 25%;
+            padding: 20px;
+	    margin-left:80%;
+	    margin-top:-12%;
+		
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Dictionary</h1>
+        <input type="text" id="searchInput" placeholder="Enter a word">
+        <button id="searchButton" onclick="searchWord()">Search</button>
+    </div>
+
+    <div id="searchResults">
+        <!-- The fetched word information will be displayed here -->
+    </div>
+
+    <div id="recentlySearched">
+        <h2>Recently Searched Words</h2>
+        <ul id="recentList">
+            <!-- The recently searched words will be displayed here -->
+        </ul>
+    </div>
+
+    <script>
+        // Function to fetch word information from the API
+        function searchWord() {
+            const searchInput = document.getElementById("searchInput").value;
+            const apiUrl = `https://api.dictionaryapi.dev/api/v2/entries/en/${searchInput}`;
+
+            // Make a GET request to the backend API
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Process the response data and update the searchResults div
+                    const searchResults = document.getElementById("searchResults");
+                    const wordData = data[0]; // The API returns an array, we'll use the first entry
+                    searchResults.innerHTML = `
+                        <h3>${wordData.word}</h3>
+                        <p><strong>Definition:</strong> ${wordData.meanings[0].definitions[0].definition}</p>
+                    `;
+
+                    // Add the searched word to the recently searched list
+                    addRecentlySearched(wordData.word);
+                })
+                .catch(error => {
+                    console.error("Error fetching word data:", error);
+                });
+        }
+
+        // Function to add the searched word to the recently searched list
+        function addRecentlySearched(word) {
+            const recentList = document.getElementById("recentList");
+            const listItem = document.createElement("li");
+            listItem.textContent = word;
+            recentList.appendChild(listItem);
+        }
+    </script>
+</body>
+</html>
